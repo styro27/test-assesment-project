@@ -1,0 +1,42 @@
+# Playwright
+/playwright-report/
+/test-results/
+/playwright/.cache/
+/playwright/artifacts/
+/playwright/downloads/
+playwright.config.local.ts
+
+# Node.js
+node_modules/
+npm-debug.log
+yarn-error.log
+.pnpm-debug.log
+
+# TypeScript
+*.js.map
+*.d.ts
+dist/
+out/
+*.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+.env*.local
+
+# User data
+allure-results/
+allure-report/
+*.allure/
+*.tmp
+
+# System files
+Thumbs.db
+ehthumbs.db
