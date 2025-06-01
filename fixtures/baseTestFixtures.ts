@@ -1,11 +1,17 @@
-import {test as base } from "@playwright/test";
+import {test as base, Page, expect } from "@playwright/test";
 import { MainPage } from "../pages/mainPage";
 import { LoginPage } from "../pages/loginPage";
 
-  export const test = base.extend<{ loginPage: LoginPage; mainPage: MainPage }>({
+  type Fixtures = {
+    loginPage: LoginPage;
+    mainPage: MainPage;
+  };
+
+  export const test = base.extend<Fixtures>({
     loginPage: async ({ page }, use) => {
       await use(new LoginPage(page));
     },
+
     mainPage: async ({ page }, use) => {
       await use(new MainPage(page));
     },
