@@ -4,7 +4,9 @@ import { defineConfig, devices } from "@playwright/test";
  * Read environment variables from file.
  */
 import dotenv from "dotenv";
-dotenv.config({ path: `.env.${process.env.ENV || "test"}` });
+if (!process.env.CI) {
+  dotenv.config({ path: `.env.${process.env.ENV || "test"}` });
+}
 
 export default defineConfig({
   testDir: "./tests",

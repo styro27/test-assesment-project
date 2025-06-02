@@ -1,0 +1,111 @@
+name: Playwright Tests with Allure
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            ~/.cache/ms-playwright
+          key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+        if: steps.cache.outputs.cache-hit != 'true'
+
+      - name: Cache Allure CLI
+        id: cache-allure
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: allure-cli-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      
+      - name: Install Allure CLI
+        if: steps.cache-allure.outputs.cache-hit != 'true'
+        run: npm install -g allure-commandline
+      
+
+      - name: Run Playwright tests
+        env:
+           BASE_URL: ${{ secrets.BASE_URL }}
+           USER_NAME: ${{ secrets.LOGIN }}
+           PASSWORD: ${{ secrets.PASSWORD }}
+        run: npx playwright test
+
+      - name: Generate Allure report
+        run: |
+          mkdir -p allure-report
+          npx allure generate allure-results -o allure-report
+          cp -r allure-results/history allure-report/ || true
+
+      - name: Add .nojekyll to prevent GitHub Pages from ignoring files
+        run: touch allure-report/.nojekyll    
+
+      - name: Upload Allure report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: allure-report
+          retention-days: 3
+
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./allure-report
+          keep_files: true
+      - name: Add Allure report instructions to summary
+        run: |
+            echo "### 🧪 Allure Report Instructions" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "✅ **Allure report has been successfully generated and uploaded** as an artifact: \`allure-report.zip\`." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "You can find the download link in the **Artifacts** section of this workflow run." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "---" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 📁 How to view the report locally:" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "After downloading and unzipping \`allure-report.zip\`, you will get a folder containing an \`index.html\` file." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Due to browser restrictions**, opening \`index.html\` directly in Chrome or Edge might not work (you may see an infinite loading spinner)." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "#### 🔹 Option 1: If you have npm" >> $GITHUB_STEP_SUMMARY
+            echo "Run this in terminal inside the report folder:" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo " npx http-server 'path_to_allure_folder' -p 8000" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Then open http://localhost:8000 in your browser." >> $GITHUB_STEP_SUMMARY
+            echo "#### 🔹 Option 2: If you use **VS Code**:" >> $GITHUB_STEP_SUMMARY
+            echo "1. Install the *Live Server* extension." >> $GITHUB_STEP_SUMMARY
+            echo "2. Open the \`allure-report\` folder in VS Code." >> $GITHUB_STEP_SUMMARY
+            echo "3. Right-click \`index.html\` → **Open with Live Server**." >> $GITHUB_STEP_SUMMARY
+        
+
+   
