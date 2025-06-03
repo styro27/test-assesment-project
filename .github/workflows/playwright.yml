@@ -83,9 +83,12 @@ jobs:
           keep_files: true
       - name: Add Allure report instructions to summary
         run: |
+          REPORT_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
             echo "### 🧪 Allure Report Instructions" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "✅ **Allure report has been successfully generated and uploaded** as an artifact: \`allure-report.zip\`." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "📄 **[👉 View Allure Report on GitHub Pages]($REPORT_URL)**" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "You can find the download link in the **Artifacts** section of this workflow run." >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
