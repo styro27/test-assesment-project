@@ -92,6 +92,7 @@ After a successful CI run:
 
 ### 💾 Option 2: Download and View Locally
 
+#### If you have npm:
 1. Download the `allure-report.zip` artifact from the CI run
 2. Unzip the file
 3. Serve it locally using any static server, for example:
@@ -99,10 +100,13 @@ After a successful CI run:
 ```bash
 npx http-server path_to_allure_folder -p 8000
 ```
-
 4. Then open:
    `http://localhost:8000` in your browser
 
+#### If you use VS Code:
+1. Install the Live Server extension.
+2. Open the allure-report folder in VS Code.
+3. Right-click index.html → Open with Live Server.
 ---
 
 ## 📄 Project Structure
