@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 if (!process.env.CI) {
   dotenv.config({ path: `.env.${process.env.ENV || "test"}` });
 }
-
+const browser = process.env.BROWSER || "chromium";
 export default defineConfig({
   testDir: "./tests",
   timeout: 30_000,
@@ -31,14 +31,17 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    {
-      name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
-    },
-
-    {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
-    },
-  ],
+    browser === "chromium"
+      ? {
+          name: "chromium",
+          use: { ...devices["Desktop Chrome"] },
+        }
+      : undefined,
+    browser === "firefox"
+      ? {
+          name: "firefox",
+          use: { ...devices["Desktop Firefox"] },
+        }
+      : undefined,
+  ].filter(Boolean) as import("@playwright/test").Project[],
 });
