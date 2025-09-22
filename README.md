@@ -80,8 +80,18 @@ You can find the CI configuration at:
 `.github/workflows/playwright.yml`
 
 ---
+## 🖱️ Running tests manually from GitHub Actions
 
+In addition to automatic runs on push, you can trigger the workflow manually:
+
+1. Go to the **Actions** tab in your repository.
+2. Select the **Playwright Tests** workflow.
+3. Click **Run workflow**.
+4. Choose the browser to run the tests on (by default: **Chromium**).
+5. Press **Run workflow** to start the tests.
+---
 ## 📊 Accessing Allure Reports
+
 Sample report:
 ![Логотип](/allure_report_example.png)
 
