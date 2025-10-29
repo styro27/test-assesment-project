@@ -34,7 +34,8 @@ git clone https://github.com/styro27/task-board-test-project.git
 ### 2. Install Playwright
 
 ```bash
-npm init playwright@latest
+npm ci
+npx playwright install
 ```
 
 ### 3. Install Allure
